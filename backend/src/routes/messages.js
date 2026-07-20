@@ -16,7 +16,7 @@ router.post("/", async (req, res) => {
 console.log("Request Body:", req.body);
 console.log("Message:", req.body.message);
     
-    const { message } = req.body;
+    const message = req.body.message || req.body.content;
 
 
     const completion = await groq.chat.completions.create({
