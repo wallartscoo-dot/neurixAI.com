@@ -65,36 +65,33 @@ export async function sendMessage(
   content: string,
   onToken: (text: string) => void
 ) {
-  const res = await fetch(`${API_URL}/api/conversations/${conversationId}/messages`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...authHeaders(),
-    },
-    body: JSON.stringify({ content }),
-  });
+  const res = await fetch(
+    `${API_URL}/api/conversations/${conversationId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders(),
+      },
+      body: JSON.stringify({ content }),
+    }
+  );
 
   if (!res.ok) {
     throw new Error("Failed to get AI response");
   }
 
-  const data = await res.json();
-  onToken(data.reply);
-}
-  const res = await fetch(`${API_URL}/api/conversations/${conversationId}/messages`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeaders() },
-    body: JSON.stringify({ content }),
-  });
-
   const reader = res.body?.getReader();
-  const decoder = new TextDecoder();
   if (!reader) return;
 
+  const decoder = new TextDecoder();
   let buffer = "";
+
   while (true) {
     const { done, value } = await reader.read();
+
     if (done) break;
+
     buffer += decoder.decode(value, { stream: true });
 
     const events = buffer.split("\n\n");
@@ -103,12 +100,18 @@ export async function sendMessage(
     for (const event of events) {
       const line = event.split("\n").find((l) => l.startsWith("data: "));
       if (!line) continue;
+
       try {
         const payload = JSON.parse(line.slice(6));
-        if (payload.text) onToken(payload.text);
-      } catch {
-        // ignore malformed chunk
-      }
+
+        if (payload.text) {
+          onToken(payload.text);
+        }
+
+        if (payload.done) {
+          return;
+        }
+      } catch {}
     }
   }
 }
