@@ -13,11 +13,10 @@ router.get("/", (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-console.log("Request Body:", req.body);
-console.log("Message:", req.body.message);
-    
-    const message = req.body.message || req.body.content;
+const message = req.body.message || req.body.content;
 
+console.log("Request Body:", req.body);
+console.log("Message:", message);
 
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
