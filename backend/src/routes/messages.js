@@ -40,6 +40,8 @@ If user writes English, reply in English.
       temperature: 0.7
     });
 
+    console.log("Groq response received");
+console.log(completion);
 
     res.json({
       reply: completion.choices[0].message.content
