@@ -1,10 +1,13 @@
-import Hero from "@/components/Hero";
 "use client";
 
 import { useEffect, useState } from "react";
+
+import Hero from "@/components/Hero";
+import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import MessageBubble from "@/components/MessageBubble";
 import MessageInput from "@/components/MessageInput";
+
 import {
   listConversations,
   createConversation,
