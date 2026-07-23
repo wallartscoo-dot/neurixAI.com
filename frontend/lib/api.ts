@@ -109,5 +109,3 @@ declare global {
     __neurixToken?: string;
   }
 }
-
-
