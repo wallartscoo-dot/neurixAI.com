@@ -49,6 +49,18 @@ async function newConversation() {
   setMessages([]);
 }
 
+  async function removeConversation(id: string) {
+  await deleteConversation(id);
+
+  setConversations((prev) =>
+    prev.filter((c) => c.id !== id)
+  );
+
+  if (activeId === id) {
+    setActiveId(null);
+    setMessages([]);
+  }
+}
 
 async function handleSend(text: string) {
   let conversationId = activeId;
