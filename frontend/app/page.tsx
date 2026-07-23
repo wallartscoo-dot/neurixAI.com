@@ -49,16 +49,28 @@ export default function Home() {
     setMessages([]);
   }
 
-  async function removeConversation(id: string) {
-    await deleteConversation(id);
-    setConversations((prev) => prev.filter((c) => c.id !== id));
-    if (activeId === id) {
-      setActiveId(null);
-      setMessages([]);
-    }
+  try {
+    const data = await sendMessage(conversationId!, text);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: data.reply,
+      },
+    ]);
+
+  } catch (error) {
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "AI response failed",
+      },
+    ]);
   }
 
-   async function handleSend(text: string) {
+ async function handleSend(text: string) {
   let conversationId = activeId;
 
   if (!conversationId) {
