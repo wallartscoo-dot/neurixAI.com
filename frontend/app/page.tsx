@@ -95,7 +95,9 @@ export default function Home() {
       />
 
       <main className="flex-1 flex flex-col">
-        {messages.length === 0 ? (
+  <Navbar />
+
+  {messages.length === 0 ? (
   <div className="flex-1 flex flex-col items-center justify-center px-6">
     <Hero />
     <div className="w-full max-w-4xl mt-10">
