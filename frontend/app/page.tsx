@@ -70,16 +70,46 @@ export default function Home() {
     setMessages((prev) => [...prev, { role: "user", content: text }, { role: "assistant", content: "" }]);
     setStreaming(true);
 
-    await sendMessage(conversationId!, text, (token) => {
-      setMessages((prev) => {
-        const next = [...prev];
-        next[next.length - 1] = {
-          role: "assistant",
-          content: next[next.length - 1].content + token,
-        };
-        return next;
-      });
-    });
+   async function handleSend(text: string) {
+  let conversationId = activeId;
+
+  if (!conversationId) {
+    const conv = await createConversation();
+    setConversations((prev) => [conv, ...prev]);
+    setActiveId(conv.id);
+    conversationId = conv.id;
+  }
+
+  setMessages((prev) => [
+    ...prev,
+    { role: "user", content: text },
+  ]);
+
+  setStreaming(true);
+
+  try {
+    const data = await sendMessage(conversationId!, text);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: data.reply,
+      },
+    ]);
+
+  } catch (error) {
+    setMessages((prev) => [
+      ...prev,
+      {
+        role: "assistant",
+        content: "AI response failed",
+      },
+    ]);
+  }
+
+  setStreaming(false);
+}
 
     setStreaming(false);
   }
