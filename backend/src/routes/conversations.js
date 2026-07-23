@@ -116,6 +116,13 @@ If user writes English, reply in English.
       }
     }
 
+    await prisma.message.create({
+  data: {
+    conversationId: req.params.id,
+    role: "assistant",
+    content: fullReply,
+  },
+});
    const conversation = await prisma.conversation.findUnique({
   where: { id: req.params.id },
 });
