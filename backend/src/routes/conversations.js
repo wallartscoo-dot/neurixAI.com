@@ -116,14 +116,18 @@ If user writes English, reply in English.
       }
     }
 
-    await prisma.message.create({
-      data: {
-        conversationId: req.params.id,
-        role: "assistant",
-        content: fullReply,
-      },
-    });
+   const conversation = await prisma.conversation.findUnique({
+  where: { id: req.params.id },
+});
 
+if (conversation?.title === "New chat") {
+  await prisma.conversation.update({
+    where: { id: req.params.id },
+    data: {
+      title: message.substring(0, 40),
+    },
+  });
+}
     res.write(
       `data: ${JSON.stringify({ done: true })}\n\n`
     );
