@@ -93,10 +93,10 @@ If user writes English, reply in English.
   })),
 ];
     const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      stream: true,
-      messages: [
-        {
+  model: "llama-3.3-70b-versatile",
+  stream: true,
+  messages: aiMessages,
+});
           role: "system",
           content: `
 You are Neurix AI assistant.
