@@ -81,6 +81,10 @@ export async function sendMessage(
 
   return res.json();
 }
+export async function sendMessage(
+  conversationId: string,
+  content: string
+) {
   const res = await fetch(
     `${API_URL}/api/conversations/${conversationId}/messages`,
     {
@@ -97,38 +101,12 @@ export async function sendMessage(
     throw new Error("Failed to get AI response");
   }
 
-  const reader = res.body?.getReader();
-  if (!reader) return;
+  return res.json();
+}
 
-  const decoder = new TextDecoder();
-  let buffer = "";
-
-  while (true) {
-    const { done, value } = await reader.read();
-
-    if (done) break;
-
-    buffer += decoder.decode(value, { stream: true });
-
-    const events = buffer.split("\n\n");
-    buffer = events.pop() || "";
-
-    for (const event of events) {
-      const line = event.split("\n").find((l) => l.startsWith("data: "));
-      if (!line) continue;
-
-      try {
-        const payload = JSON.parse(line.slice(6));
-
-        if (payload.text) {
-          onToken(payload.text);
-        }
-
-        if (payload.done) {
-          return;
-        }
-      } catch {}
-    }
+declare global {
+  interface Window {
+    __neurixToken?: string;
   }
 }
 
