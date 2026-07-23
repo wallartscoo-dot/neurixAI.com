@@ -1,6 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Plus,
+  Mic,
+  Paperclip,
+  SendHorizontal,
+  ChevronDown,
+} from "lucide-react";
 
 export default function MessageInput({
   onSend,
@@ -18,8 +25,9 @@ export default function MessageInput({
   }
 
   return (
-    <div className="border-t border-black/10 p-4">
-      <div className="flex items-end gap-2 border border-black/15 rounded-xl px-3 py-2 bg-white">
+    <div className="w-full">
+      <div className="rounded-3xl border border-gray-200 bg-white shadow-xl p-5">
+
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -29,17 +37,48 @@ export default function MessageInput({
               submit();
             }
           }}
-          placeholder="Message Neurix AI"
-          rows={1}
-          className="flex-1 resize-none outline-none text-sm bg-transparent"
+          rows={3}
+          placeholder="How can I help you today?"
+          className="w-full resize-none bg-transparent text-lg outline-none"
         />
-        <button
-          onClick={submit}
-          disabled={disabled}
-          className="text-sm px-3 py-1 rounded-lg bg-moss text-white disabled:opacity-40"
-        >
-          Send
-        </button>
+
+        <div className="mt-5 flex items-center justify-between">
+
+          <div className="flex items-center gap-3">
+
+            <button className="rounded-full border p-2 hover:bg-gray-100">
+              <Plus size={18} />
+            </button>
+
+            <button className="flex items-center gap-2 rounded-full border px-4 py-2 hover:bg-gray-100">
+              Groq
+              <ChevronDown size={16} />
+            </button>
+
+          </div>
+
+          <div className="flex items-center gap-3">
+
+            <button className="rounded-full border p-2 hover:bg-gray-100">
+              <Paperclip size={18} />
+            </button>
+
+            <button className="rounded-full border p-2 hover:bg-gray-100">
+              <Mic size={18} />
+            </button>
+
+            <button
+              onClick={submit}
+              disabled={disabled}
+              className="rounded-full bg-black p-3 text-white hover:bg-gray-800 disabled:opacity-50"
+            >
+              <SendHorizontal size={18} />
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
     </div>
   );
