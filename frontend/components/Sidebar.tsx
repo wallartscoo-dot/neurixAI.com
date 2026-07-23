@@ -1,6 +1,19 @@
 "use client";
+
 import { useTheme } from "next-themes";
-type Conversation = { id: string; title: string };
+import {
+  Plus,
+  MessageSquare,
+  Trash2,
+  Moon,
+  Sun,
+  Sparkles,
+} from "lucide-react";
+
+type Conversation = {
+  id: string;
+  title: string;
+};
 
 export default function Sidebar({
   conversations,
@@ -16,51 +29,87 @@ export default function Sidebar({
   onDelete: (id: string) => void;
 }) {
   const { theme, setTheme } = useTheme();
+
   return (
-    <aside className="w-[260px] shrink-0 bg-white/60 border-r border-black/10 flex flex-col p-3">
-      <div className="flex items-center gap-2 px-2 mb-4">
- <span className="font-voice text-lg text-red-600">
-  🔥 TEST
-</span>
-</div>
+    <aside className="w-72 bg-white border-r border-gray-200 flex flex-col">
 
-<div className="mb-4">
-  <button
-    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-    className="w-full rounded-lg border border-black/10 px-3 py-2 text-sm"
-  >
-    {theme === "dark" ? "☀️ Light Mode" : "🌙 Dark Mode"}
-  </button>
-</div>
+      {/* Logo */}
+      <div className="px-6 py-6 border-b border-gray-100">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center">
+            <Sparkles size={20} />
+          </div>
 
-      <button
-        onClick={onNew}
-        className="w-full text-left px-3 py-2 rounded-lg border border-black/10 text-sm mb-4 hover:bg-black/5"
-      >
-        + New chat
-      </button>
+          <div>
+            <h1 className="font-bold text-lg">Neurix AI</h1>
+            <p className="text-xs text-gray-500">
+              Your AI Assistant
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <div className="flex-1 overflow-auto space-y-1">
+      {/* New Chat */}
+      <div className="p-4">
+        <button
+          onClick={onNew}
+          className="w-full rounded-xl bg-black text-white py-3 flex items-center justify-center gap-2 hover:bg-gray-900"
+        >
+          <Plus size={18} />
+          New Chat
+        </button>
+      </div>
+
+      {/* Chats */}
+      <div className="flex-1 overflow-y-auto px-3">
         {conversations.map((c) => (
           <div
             key={c.id}
             onClick={() => onSelect(c.id)}
-            className={`group flex items-center justify-between px-3 py-2 rounded-lg text-sm cursor-pointer ${
-              c.id === activeId ? "bg-white border border-black/10" : "hover:bg-black/5"
+            className={`group flex items-center justify-between rounded-xl px-3 py-3 mb-2 cursor-pointer transition ${
+              activeId === c.id
+                ? "bg-orange-100"
+                : "hover:bg-gray-100"
             }`}
           >
-            <span className="truncate">{c.title}</span>
+            <div className="flex items-center gap-2 overflow-hidden">
+              <MessageSquare size={18} />
+              <span className="truncate">{c.title}</span>
+            </div>
+
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(c.id);
               }}
-              className="opacity-0 group-hover:opacity-100 text-xs text-slate"
+              className="opacity-0 group-hover:opacity-100"
             >
-              delete
+              <Trash2 size={16} />
             </button>
           </div>
         ))}
+      </div>
+
+      {/* Bottom */}
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={() =>
+            setTheme(theme === "dark" ? "light" : "dark")
+          }
+          className="w-full rounded-xl border py-3 flex items-center justify-center gap-2"
+        >
+          {theme === "dark" ? (
+            <>
+              <Sun size={18} />
+              Light Mode
+            </>
+          ) : (
+            <>
+              <Moon size={18} />
+              Dark Mode
+            </>
+          )}
+        </button>
       </div>
     </aside>
   );
