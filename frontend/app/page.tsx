@@ -111,9 +111,6 @@ export default function Home() {
   setStreaming(false);
 }
 
-    setStreaming(false);
-  }
-
  
   return (
     <div className="flex h-screen bg-bone text-ink">
