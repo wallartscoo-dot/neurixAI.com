@@ -97,20 +97,6 @@ If user writes English, reply in English.
   stream: true,
   messages: aiMessages,
 });
-          role: "system",
-          content: `
-You are Neurix AI assistant.
-Reply in the same language as the user.
-If user writes Roman Urdu, reply in Roman Urdu.
-If user writes English, reply in English.
-`,
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
 
     res.setHeader("Content-Type", "text/event-stream");
     res.setHeader("Cache-Control", "no-cache");
