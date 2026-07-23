@@ -110,8 +110,4 @@ declare global {
   }
 }
 
-declare global {
-  interface Window {
-    __neurixToken?: string;
-  }
-}
+
