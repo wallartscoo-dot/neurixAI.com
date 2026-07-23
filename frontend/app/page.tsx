@@ -42,35 +42,15 @@ export default function Home() {
     setMessages(msgs);
   }
 
-  async function newConversation() {
-    const conv = await createConversation();
-    setConversations((prev) => [conv, ...prev]);
-    setActiveId(conv.id);
-    setMessages([]);
-  }
+async function newConversation() {
+  const conv = await createConversation();
+  setConversations((prev) => [conv, ...prev]);
+  setActiveId(conv.id);
+  setMessages([]);
+}
 
-  try {
-    const data = await sendMessage(conversationId!, text);
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: data.reply,
-      },
-    ]);
-
-  } catch (error) {
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: "AI response failed",
-      },
-    ]);
-  }
-
- async function handleSend(text: string) {
+async function handleSend(text: string) {
   let conversationId = activeId;
 
   if (!conversationId) {
