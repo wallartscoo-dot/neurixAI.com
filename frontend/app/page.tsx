@@ -58,18 +58,6 @@ export default function Home() {
     }
   }
 
-  async function handleSend(text: string) {
-    let conversationId = activeId;
-    if (!conversationId) {
-      const conv = await createConversation();
-      setConversations((prev) => [conv, ...prev]);
-      setActiveId(conv.id);
-      conversationId = conv.id;
-    }
-
-    setMessages((prev) => [...prev, { role: "user", content: text }, { role: "assistant", content: "" }]);
-    setStreaming(true);
-
    async function handleSend(text: string) {
   let conversationId = activeId;
 
