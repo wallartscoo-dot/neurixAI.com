@@ -59,12 +59,28 @@ export async function getMessages(conversationId: string) {
   return res.json();
 }
 
-// Streams the assistant's reply, calling onToken for each chunk of text.
 export async function sendMessage(
   conversationId: string,
-  content: string,
-  onToken: (text: string) => void
+  content: string
 ) {
+  const res = await fetch(
+    `${API_URL}/api/conversations/${conversationId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders(),
+      },
+      body: JSON.stringify({ content }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to get AI response");
+  }
+
+  return res.json();
+}
   const res = await fetch(
     `${API_URL}/api/conversations/${conversationId}/messages`,
     {
