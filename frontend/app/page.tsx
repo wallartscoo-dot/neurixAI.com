@@ -86,7 +86,6 @@ export default function Home() {
 
   const updatedConversations = await listConversations();
   setConversations(updatedConversations);
-  
   return (
     <div className="flex h-screen bg-bone text-ink">
       <Sidebar
