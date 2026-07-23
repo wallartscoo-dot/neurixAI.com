@@ -67,6 +67,31 @@ conversationsRouter.post("/:id/messages", async (req, res) => {
       },
     });
 
+    const previousMessages = await prisma.message.findMany({
+  where: {
+    conversationId: req.params.id,
+  },
+  orderBy: {
+    createdAt: "asc",
+  },
+});
+
+const aiMessages = [
+  {
+    role: "system",
+    content: `
+You are Neurix AI assistant.
+Reply in the same language as the user.
+If user writes Roman Urdu, reply in Roman Urdu.
+If user writes English, reply in English.
+`,
+  },
+
+  ...previousMessages.map((msg) => ({
+    role: msg.role,
+    content: msg.content,
+  })),
+];
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
       stream: true,
