@@ -51,7 +51,7 @@ export default function MessageInput({
             </button>
 
             <button className="flex items-center gap-2 rounded-full border px-4 py-2 hover:bg-gray-100">
-              Groq
+              Neurix AI
               <ChevronDown size={16} />
             </button>
 
