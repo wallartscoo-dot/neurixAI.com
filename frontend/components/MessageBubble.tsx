@@ -48,11 +48,10 @@ export default function MessageBubble({
 
       return match ? (
         <SyntaxHighlighter
-          style={oneDark}
-          language={match[1]}
-          PreTag="div"
-          {...props}
-        >
+  style={oneDark}
+  language={match[1]}
+  PreTag="div"
+>
           {String(children).replace(/\n$/, "")}
         </SyntaxHighlighter>
       ) : (
