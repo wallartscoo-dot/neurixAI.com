@@ -43,9 +43,22 @@ If user writes English, reply in English.
     console.log("Groq response received");
 console.log(completion);
 
-    res.json({
-      reply: completion.choices[0].message.content
-    });
+    const reply = completion.choices[0].message.content;
+
+res.setHeader("Content-Type", "text/event-stream");
+res.setHeader("Cache-Control", "no-cache");
+res.setHeader("Connection", "keep-alive");
+
+const words = reply.split(" ");
+
+for (const word of words) {
+  res.write(`data: ${JSON.stringify({ text: word + " " })}\n\n`);
+
+  await new Promise((resolve) => setTimeout(resolve, 30));
+}
+
+res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+res.end();
 
 
  } catch (error) {
