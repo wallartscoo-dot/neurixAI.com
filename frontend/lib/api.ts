@@ -114,24 +114,6 @@ export async function sendMessage(
     }
   }
 }
-  const res = await fetch(
-    `${API_URL}/api/conversations/${conversationId}/messages`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...authHeaders(),
-      },
-      body: JSON.stringify({ content }),
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to get AI response");
-  }
-
-  return res.json();
-}
 
 declare global {
   interface Window {
