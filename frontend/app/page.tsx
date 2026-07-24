@@ -136,10 +136,12 @@ setStreaming(false);
   </div>
 ) : (
           <div className="flex-1 overflow-auto p-6 flex flex-col gap-4">
-            {messages.map((m, i) => (
-              <MessageBubble key={i} role={m.role} content={m.content} />
-            ))}
-          </div>
+  {messages.map((m, i) => (
+    <MessageBubble key={i} role={m.role} content={m.content} />
+  ))}
+
+  <div ref={bottomRef} />
+</div>
         )}
 
        {messages.length > 0 && (
