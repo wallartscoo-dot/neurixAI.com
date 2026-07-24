@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import Hero from "@/components/Hero";
 import Navbar from "@/components/Navbar";
@@ -24,6 +24,8 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [streaming, setStreaming] = useState(false);
+
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
   const token = localStorage.getItem("neurixToken");
