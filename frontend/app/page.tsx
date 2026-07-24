@@ -28,6 +28,12 @@ export default function Home() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+  bottomRef.current?.scrollIntoView({
+    behavior: "smooth",
+  });
+}, [messages]);
+
+  useEffect(() => {
   const token = localStorage.getItem("neurixToken");
 
   if (!token) {
