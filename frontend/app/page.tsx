@@ -73,13 +73,14 @@ async function handleSend(text: string) {
   }
 
   setMessages((prev) => [
-    ...prev,
-    { role: "user", content: text },
-  ]);
+  ...prev,
+  { role: "user", content: text },
+  { role: "assistant", content: "" },
+]);
 
-  setStreaming(true);
+setStreaming(true);
 
-  try {
+try {
   await sendMessage(conversationId!, text, (token) => {
     setMessages((prev) => {
       const next = [...prev];
@@ -90,18 +91,18 @@ async function handleSend(text: string) {
       return next;
     });
   });
-} catch (error)
-  { 
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "assistant",
-        content: "AI response failed",
-      },
-    ]);
-  }
+} catch {
+  setMessages((prev) => {
+    const next = [...prev];
+    next[next.length - 1] = {
+      role: "assistant",
+      content: "AI response failed",
+    };
+    return next;
+  });
+}
 
-  setStreaming(false);
+setStreaming(false);
 }
 
  
