@@ -80,17 +80,18 @@ async function handleSend(text: string) {
   setStreaming(true);
 
   try {
-    const data = await sendMessage(conversationId!, text);
-
-    setMessages((prev) => [
-      ...prev,
-      {
+  await sendMessage(conversationId!, text, (token) => {
+    setMessages((prev) => {
+      const next = [...prev];
+      next[next.length - 1] = {
         role: "assistant",
-        content: data.reply,
-      },
-    ]);
-
-  } catch (error) {
+        content: next[next.length - 1].content + token,
+      };
+      return next;
+    });
+  });
+} catch (error)
+  { 
     setMessages((prev) => [
       ...prev,
       {
