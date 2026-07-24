@@ -40,9 +40,31 @@ export default function MessageBubble({
         </div>
 
         <div className="rounded-2xl bg-white border border-gray-200 px-5 py-4 shadow-sm prose prose-sm max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {content || "Thinking..."}
-          </ReactMarkdown>
+          <ReactMarkdown
+  remarkPlugins={[remarkGfm]}
+  components={{
+    code({ inline, className, children, ...props }) {
+      const match = /language-(\w+)/.exec(className || "");
+
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={oneDark}
+          language={match[1]}
+          PreTag="div"
+          {...props}
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
+  }}
+>
+  {content || "Thinking..."}
+</ReactMarkdown>
         </div>
 
       </div>
