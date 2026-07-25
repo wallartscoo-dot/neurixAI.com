@@ -26,7 +26,7 @@ export default function MessageInput({
 
   return (
     <div className="w-full">
-      <div className="rounded-3xl border border-gray-200 bg-white shadow-xl p-5">
+      <div className="rounded-[28px] border border-gray-200 bg-white shadow-lg px-6 py-4 transition-all duration-200 hover:shadow-xl">
 
         <textarea
           value={value}
