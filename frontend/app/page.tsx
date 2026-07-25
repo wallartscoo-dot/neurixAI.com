@@ -145,7 +145,12 @@ setStreaming(false);
         )}
 
        {messages.length > 0 && (
-  <MessageInput onSend={handleSend} disabled={streaming} />
+  <div className="border-t bg-white">
+    <MessageInput
+      onSend={handleSend}
+      disabled={streaming}
+    />
+  </div>
 )}
       </main>
     </div>
