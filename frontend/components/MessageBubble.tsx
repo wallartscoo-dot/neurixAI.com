@@ -44,7 +44,16 @@ export default function MessageBubble({
           <Bot size={18} />
         </div>
 
-        <div className="rounded-2xl bg-white border border-gray-200 px-5 py-4 shadow-sm prose prose-sm max-w-none">
+        <div className="relative rounded-2xl bg-white border border-gray-200 px-5 py-4 shadow-sm prose prose-sm max-w-none">
+
+          <button
+  onClick={copyMessage}
+  className="absolute top-3 right-3 p-2 rounded-lg hover:bg-gray-100 transition"
+  title="Copy"
+>
+  <Copy size={16} />
+</button>
+          
           <ReactMarkdown
   remarkPlugins={[remarkGfm]}
   components={{
