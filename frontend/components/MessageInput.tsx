@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState } from "react";
-const textareaRef = useRef<HTMLTextAreaElement>(null);
 import {
   Plus,
   Mic,
@@ -18,6 +17,7 @@ export default function MessageInput({
   disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
  function submit() {
   if (!value.trim() || disabled) return;
