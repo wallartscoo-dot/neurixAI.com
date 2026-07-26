@@ -46,14 +46,14 @@ export default function MessageInput({
 
           <div className="flex items-center gap-3">
 
-            <button className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black"
+            <button className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black">
               <Plus size={18} />
             </button>
 
-            <button className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium hover:bg-gray-200"
-              Neurix AI
-              <ChevronDown size={16} />
-            </button>
+            <button className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium hover:bg-gray-200">
+  <span>Neurix AI</span>
+  <ChevronDown size={16} />
+</button>
 
           </div>
 
