@@ -26,7 +26,7 @@ export default function MessageInput({
 
   return (
     <div className="w-full">
-      <div className="rounded-[28px] border border-gray-200 bg-white shadow-lg px-6 py-4 transition-all duration-200 hover:shadow-xl">
+      <div className="rounded-[28px] border border-gray-200 bg-white shadow-lg px-6 py-3 transition-all duration-200 hover:shadow-xl">
 
         <textarea
           value={value}
@@ -39,10 +39,12 @@ export default function MessageInput({
           }}
          rows={1}
           placeholder="How can I help you today?"
-          className="w-full resize-none bg-transparent text-[16px] leading-7 outline-none placeholder:text-gray-400"
-        />
+          rows={1}
 
-        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
+     className="w-full resize-none overflow-hidden bg-transparent text-[16px] leading-6 outline-none placeholder:text-gray-400"
+          />
+
+        <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
 
           <div className="flex items-center gap-3">
 
