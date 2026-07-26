@@ -37,20 +37,20 @@ export default function MessageInput({
               submit();
             }
           }}
-          rows={3}
+         rows={1}
           placeholder="How can I help you today?"
-          className="w-full resize-none bg-transparent text-lg outline-none"
+          className="w-full resize-none bg-transparent text-[16px] leading-7 outline-none placeholder:text-gray-400"
         />
 
-        <div className="mt-5 flex items-center justify-between">
+        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3">
 
           <div className="flex items-center gap-3">
 
-            <button className="rounded-full border p-2 hover:bg-gray-100">
+            <button className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black"
               <Plus size={18} />
             </button>
 
-            <button className="flex items-center gap-2 rounded-full border px-4 py-2 hover:bg-gray-100">
+            <button className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-medium hover:bg-gray-200"
               Neurix AI
               <ChevronDown size={16} />
             </button>
@@ -59,18 +59,18 @@ export default function MessageInput({
 
           <div className="flex items-center gap-3">
 
-            <button className="rounded-full border p-2 hover:bg-gray-100">
+            <button className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black"
               <Paperclip size={18} />
             </button>
 
-            <button className="rounded-full border p-2 hover:bg-gray-100">
+            <button className="rounded-full p-2 text-gray-500 transition hover:bg-gray-100 hover:text-black"
               <Mic size={18} />
             </button>
 
             <button
               onClick={submit}
               disabled={disabled}
-              className="rounded-full bg-black p-3 text-white hover:bg-gray-800 disabled:opacity-50"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition hover:scale-105 hover:bg-gray-800 disabled:opacity-40"
             >
               <SendHorizontal size={18} />
             </button>
