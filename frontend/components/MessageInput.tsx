@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
+const textareaRef = useRef<HTMLTextAreaElement>(null);
 import {
   Plus,
   Mic,
@@ -18,17 +19,23 @@ export default function MessageInput({
 }) {
   const [value, setValue] = useState("");
 
-  function submit() {
-    if (!value.trim() || disabled) return;
-    onSend(value.trim());
-    setValue("");
+ function submit() {
+  if (!value.trim() || disabled) return;
+
+  onSend(value.trim());
+  setValue("");
+
+  if (textareaRef.current) {
+    textareaRef.current.style.height = "auto";
   }
+}
 
   return (
     <div className="w-full">
       <div className="rounded-[28px] border border-gray-200 bg-white shadow-lg px-6 py-3 transition-all duration-200 hover:shadow-xl">
 
         <textarea
+  ref={textareaRef}
   value={value}
   onChange={(e) => setValue(e.target.value)}
   onKeyDown={(e) => {
