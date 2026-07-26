@@ -29,21 +29,23 @@ export default function MessageInput({
       <div className="rounded-[28px] border border-gray-200 bg-white shadow-lg px-6 py-3 transition-all duration-200 hover:shadow-xl">
 
         <textarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
-              e.preventDefault();
-              submit();
-            }
-          }}
-         rows={1}
-          placeholder="How can I help you today?"
-          rows={1}
-
-     className="w-full resize-none overflow-hidden bg-transparent text-[16px] leading-6 outline-none placeholder:text-gray-400"
-          />
-
+  value={value}
+  onChange={(e) => setValue(e.target.value)}
+  onKeyDown={(e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      submit();
+    }
+  }}
+  onInput={(e) => {
+    const target = e.target as HTMLTextAreaElement;
+    target.style.height = "auto";
+    target.style.height = target.scrollHeight + "px";
+  }}
+  rows={1}
+  placeholder="Message Neurix AI..."
+  className="w-full resize-none overflow-hidden bg-transparent text-[16px] leading-6 outline-none placeholder:text-gray-400 max-h-40"
+/>
         <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
 
           <div className="flex items-center gap-3">
