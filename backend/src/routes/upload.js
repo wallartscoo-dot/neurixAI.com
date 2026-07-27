@@ -7,7 +7,20 @@ console.log("Upload route loaded");
 const router = express.Router();
 
 const storage = multer.diskStorage({
-  destination: "uploads/",
+ import fs from "fs";
+
+const uploadDir = "uploads";
+
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir);
+}
+
+const storage = multer.diskStorage({
+  destination: uploadDir,
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
