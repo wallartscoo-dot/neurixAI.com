@@ -138,7 +138,7 @@ export default function MessageInput({
 
             <button
               onClick={submit}
-              disabled={disabled || !value.trim()}
+              disabled={disabled || (!value.trim() && !selectedFile)}
               className="flex h-11 w-11 items-center justify-center rounded-full bg-black text-white transition hover:scale-105 hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed"         >
               <SendHorizontal size={18} />
             </button>
