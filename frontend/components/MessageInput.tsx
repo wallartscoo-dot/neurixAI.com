@@ -18,6 +18,7 @@ export default function MessageInput({
 }) {
   const [value, setValue] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
  function submit() {
   if (!value.trim() || disabled) return;
