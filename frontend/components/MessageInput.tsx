@@ -55,6 +55,27 @@ export default function MessageInput({
   placeholder="Message Neurix AI..."
   className="w-full resize-none overflow-hidden bg-transparent text-[16px] leading-6 outline-none placeholder:text-gray-400 max-h-40"
 />
+
+        {selectedFile && (
+  <div className="mb-3 flex items-center justify-between rounded-xl bg-gray-100 px-4 py-2">
+    <span className="truncate text-sm font-medium">
+      📄 {selectedFile.name}
+    </span>
+
+    <button
+      onClick={() => {
+        setSelectedFile(null);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+      }}
+      className="text-red-500 hover:text-red-700"
+    >
+      ✕
+    </button>
+  </div>
+)}
+        
         <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-3">
 
           <div className="flex items-center gap-3">
