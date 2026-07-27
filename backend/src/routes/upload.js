@@ -7,7 +7,7 @@ console.log("Upload route loaded");
 
 const router = express.Router();
 
-const uploadDir = "uploads";
+const uploadDir = path.join(process.cwd(), "uploads");
 
 if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir);
