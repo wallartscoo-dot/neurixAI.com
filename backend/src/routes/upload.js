@@ -1,13 +1,11 @@
 import express from "express";
 import multer from "multer";
 import path from "path";
+import fs from "fs";
 
 console.log("Upload route loaded");
 
 const router = express.Router();
-
-const storage = multer.diskStorage({
- import fs from "fs";
 
 const uploadDir = "uploads";
 
@@ -21,26 +19,50 @@ const storage = multer.diskStorage({
     cb(null, Date.now() + path.extname(file.originalname));
   },
 });
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+
+const upload = multer({
+  storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB
+  },
+  fileFilter: (req, file, cb) => {
+    const allowed = [
+      "image/png",
+      "image/jpeg",
+      "image/webp",
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "text/plain",
+    ];
+
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Unsupported file type"));
+    }
   },
 });
 
-const upload = multer({ storage });
+router.post("/", (req, res) => {
+  upload.single("file")(req, res, (err) => {
+    if (err) {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
 
-router.post("/", upload.single("file"), (req, res) => {
-  console.log("Upload endpoint hit");
+    console.log("Upload endpoint hit");
 
-  if (!req.file) {
-    return res.status(400).json({
-      error: "No file uploaded",
+    if (!req.file) {
+      return res.status(400).json({
+        error: "No file uploaded",
+      });
+    }
+
+    res.json({
+      message: "File uploaded successfully",
+      file: req.file.filename,
     });
-  }
-
-  res.json({
-    message: "File uploaded successfully",
-    file: req.file.filename,
   });
 });
-
 export default router;
