@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { uploadFile } from "@/lib/api";
 import {
   Plus,
   Mic,
@@ -21,10 +22,29 @@ export default function MessageInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
- function submit() {
-  if (!value.trim() || disabled) return;
+ async function submit() {
+  if ((!value.trim() && !selectedFile) || disabled) return;
 
-  onSend(value.trim());
+  if (selectedFile) {
+    try {
+      const result = await uploadFile(selectedFile);
+      console.log(result);
+
+      setSelectedFile(null);
+
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    } catch (err) {
+      console.error(err);
+      return;
+    }
+  }
+
+  if (value.trim()) {
+    onSend(value.trim());
+  }
+
   setValue("");
 
   if (textareaRef.current) {
