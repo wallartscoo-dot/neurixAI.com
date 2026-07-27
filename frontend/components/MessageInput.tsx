@@ -17,6 +17,7 @@ export default function MessageInput({
   disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
