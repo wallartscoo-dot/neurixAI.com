@@ -18,6 +18,10 @@ app.use("/api/messages", messagesRouter);
 app.use("/api/conversations/:id/messages", messagesRouter);
 app.use("/api/upload", uploadRouter);
 
+app.get("/api/test", (req, res) => {
+  res.send("Backend is updated");
+});
+
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
 const port = process.env.PORT || 4000;
