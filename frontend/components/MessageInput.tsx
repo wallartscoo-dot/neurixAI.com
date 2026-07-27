@@ -60,11 +60,18 @@ export default function MessageInput({
           <div className="flex items-center gap-3">
 
            <>
-  <input
-    ref={fileInputRef}
-    type="file"
-    className="hidden"
-  />
+ <input
+  ref={fileInputRef}
+  type="file"
+  className="hidden"
+  onChange={(e) => {
+    const file = e.target.files?.[0];
+
+    if (file) {
+      setSelectedFile(file);
+    }
+  }}
+/>
 
   <button
     onClick={() => fileInputRef.current?.click()}
