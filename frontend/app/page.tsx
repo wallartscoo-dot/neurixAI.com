@@ -14,7 +14,6 @@ import {
   deleteConversation,
   getMessages,
   sendMessage,
-  uploadFile,
 } from "@/lib/api";
 
 type Message = { role: "user" | "assistant"; content: string };
@@ -25,8 +24,7 @@ export default function Home() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [streaming, setStreaming] = useState(false);
-  const [pdfText, setPdfText] = useState("");
-
+  
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
