@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024, // 10MB
+    fileSize: 10 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
     const allowed = [
@@ -66,61 +66,20 @@ router.post("/", (req, res) => {
     try {
       const filePath = req.file.path;
 
-<<<<<<< HEAD
-     if (req.file.mimetype === "application/pdf") {
-  const pdfParser = new PDFParser();
-=======
-<<<<<<< HEAD
       if (req.file.mimetype === "application/pdf") {
-      const pdfParser = new PDFParser();
->>>>>>> a62fe18 (Add PDF upload support with pdf2json)
+        const pdfParser = new PDFParser();
 
-  extractedText = await new Promise((resolve, reject) => {
-    pdfParser.on("pdfParser_dataError", (errData) => {
-      reject(errData.parserError);
-    });
+        extractedText = await new Promise((resolve, reject) => {
+          pdfParser.on("pdfParser_dataError", (errData) => {
+            reject(errData.parserError);
+          });
 
-    pdfParser.on("pdfParser_dataReady", () => {
-      resolve(pdfParser.getRawTextContent());
-    });
+          pdfParser.on("pdfParser_dataReady", () => {
+            resolve(pdfParser.getRawTextContent());
+          });
 
-    pdfParser.loadPDF(filePath);
-  });
-
-} else if (
-  req.file.mimetype ===
-  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-) {
-  const result = await mammoth.extractRawText({
-    path: filePath,
-  });
-
-<<<<<<< HEAD
-  extractedText = result.value;
-
-} else if (req.file.mimetype === "text/plain") {
-  extractedText = fs.readFileSync(filePath, "utf8");
-}
-=======
-  pdfParser.loadPDF(filePath);
-});
-=======
- if (req.file.mimetype === "application/pdf") {
-  const pdfParser = new PDFParser();
-
-  extractedText = await new Promise((resolve, reject) => {
-    pdfParser.on("pdfParser_dataError", (errData) => {
-      reject(errData.parserError);
-    });
-
-    pdfParser.on("pdfParser_dataReady", () => {
-      resolve(pdfParser.getRawTextContent());
-    });
-
-    pdfParser.loadPDF(filePath);
-  });
-
->>>>>>> 372bebd (Add PDF upload support with pdf2json)
+          pdfParser.loadPDF(filePath);
+        });
       } else if (
         req.file.mimetype ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -128,11 +87,12 @@ router.post("/", (req, res) => {
         const result = await mammoth.extractRawText({
           path: filePath,
         });
+
         extractedText = result.value;
       } else if (req.file.mimetype === "text/plain") {
         extractedText = fs.readFileSync(filePath, "utf8");
       }
->>>>>>> a62fe18 (Add PDF upload support with pdf2json)
+
       console.log("Extracted Text:");
       console.log(extractedText);
 
@@ -150,4 +110,5 @@ router.post("/", (req, res) => {
     }
   });
 });
+
 export default router;
