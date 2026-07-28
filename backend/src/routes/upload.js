@@ -74,9 +74,14 @@ router.post("/", (req, res) => {
             reject(errData.parserError);
           });
 
-          pdfParser.on("pdfParser_dataReady", () => {
-            resolve(pdfParser.getRawTextContent());
-          });
+         pdfParser.on("pdfParser_dataReady", () => {
+  const text = pdfParser.getRawTextContent();
+
+  console.log("PDF RAW TEXT:");
+  console.log(text);
+
+  resolve(text);
+});
 
           pdfParser.loadPDF(filePath);
         });
