@@ -68,8 +68,14 @@ router.post("/", (req, res) => {
 
       if (req.file.mimetype === "application/pdf") {
         const dataBuffer = fs.readFileSync(filePath);
-        const pdfData = await pdf(dataBuffer);
-        extractedText = pdfData.text;
+
+const parser = new PDFParse({
+  data: dataBuffer,
+});
+
+const pdfData = await parser.getText();
+
+extractedText = pdfData.text;
       } else if (
         req.file.mimetype ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
