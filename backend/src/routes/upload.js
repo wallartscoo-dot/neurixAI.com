@@ -62,7 +62,7 @@ router.post("/", (req, res) => {
     }
 
     let extractedText = "";
-
+    
     try {
       const filePath = req.file.path;
 
