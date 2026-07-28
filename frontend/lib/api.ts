@@ -1,83 +1,161 @@
-import { Router } from "express";
-import Groq from "groq-sdk";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
 
-const router = Router();
+function authHeaders(): Record<string, string> {
+  if (typeof window === "undefined") return {};
 
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY,
-});
+  const token = localStorage.getItem("neurixToken");
 
-router.get("/", (req, res) => {
-  res.json({ message: "Messages route is working" });
-});
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+      }
+    : {};
+}
 
-router.post("/", async (req, res) => {
-  try {
-    const message = req.body.message || req.body.content || "";
-    const pdfText = req.body.pdfText || "";
+export async function signup(email: string, password: string, name?: string) {
+  const res = await fetch(`${API_URL}/api/auth/signup`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password, name }),
+  });
 
-    console.log("Request Body:", req.body);
-    console.log("Message:", message);
-
-    const systemPrompt = `
-You are Neurix AI.
-
-Reply in the same language as the user.
-
-- If the user writes in Roman Urdu, reply in Roman Urdu.
-- If the user writes in English, reply in English.
-
-If an uploaded PDF is provided, answer ONLY from that PDF.
-
-Rules:
-1. Do NOT invent information.
-2. If the answer exists in the PDF, answer clearly.
-3. If the answer is NOT in the PDF, reply:
-"I couldn't find that information in the uploaded PDF."
-
-Uploaded PDF:
-${pdfText}
-`;
-
-    const completion = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      messages: [
-        {
-          role: "system",
-          content: systemPrompt,
-        },
-        {
-          role: "user",
-          content: message,
-        },
-      ],
-    });
-
-    const reply =
-      completion.choices?.[0]?.message?.content ||
-      "Sorry, I couldn't generate a response.";
-
-    res.setHeader("Content-Type", "text/event-stream");
-    res.setHeader("Cache-Control", "no-cache");
-    res.setHeader("Connection", "keep-alive");
-
-    const words = reply.split(" ");
-
-    for (const word of words) {
-      res.write(`data: ${JSON.stringify({ text: word + " " })}\n\n`);
-      await new Promise((resolve) => setTimeout(resolve, 30));
-    }
-
-    res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-    res.end();
-  } catch (error) {
-    console.error("FULL ERROR:", error);
-
-    res.status(500).json({
-      error: error.message || "AI response failed",
-    });
+  if (!res.ok) {
+    throw new Error((await res.json()).error || "Signup failed");
   }
-});
 
-export default router;
+  return res.json();
+}
+
+export async function login(email: string, password: string) {
+  const res = await fetch(`${API_URL}/api/auth/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!res.ok) {
+    throw new Error((await res.json()).error || "Login failed");
+  }
+
+  return res.json();
+}
+
+export async function listConversations() {
+  const res = await fetch(`${API_URL}/api/conversations`, {
+    headers: authHeaders(),
+  });
+
+  return res.json();
+}
+
+export async function createConversation() {
+  const res = await fetch(`${API_URL}/api/conversations`, {
+    method: "POST",
+    headers: authHeaders(),
+  });
+
+  return res.json();
+}
+
+export async function deleteConversation(id: string) {
+  await fetch(`${API_URL}/api/conversations/${id}`, {
+    method: "DELETE",
+    headers: authHeaders(),
+  });
+}
+
+export async function getMessages(conversationId: string) {
+  const res = await fetch(
+    `${API_URL}/api/conversations/${conversationId}/messages`,
+    {
+      headers: authHeaders(),
+    }
+  );
+
+  return res.json();
+}
+
+export async function uploadFile(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const res = await fetch(`${API_URL}/api/upload`, {
+    method: "POST",
+    headers: authHeaders(),
+    body: formData,
+  });
+
+  if (!res.ok) {
+    throw new Error("File upload failed");
+  }
+
+  return res.json();
+}
+
+export async function sendMessage(
+  conversationId: string,
+  content: string,
+  pdfText: string,
+  onToken: (text: string) => void
+) {
+  const res = await fetch(
+    `${API_URL}/api/conversations/${conversationId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders(),
+      },
+      body: JSON.stringify({
+        content,
+        pdfText,
+      }),
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to get AI response");
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    const events = buffer.split("\n\n");
+    buffer = events.pop() || "";
+
+    for (const event of events) {
+      const line = event.split("\n").find((l) => l.startsWith("data: "));
+      if (!line) continue;
+
+      try {
+        const payload = JSON.parse(line.slice(6));
+
+        if (payload.text) onToken(payload.text);
+
+        if (payload.done) return;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  }
+}
+
+declare global {
+  interface Window {
+    __neurixToken?: string;
+  }
+}
