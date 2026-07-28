@@ -27,14 +27,15 @@ export default function MessageInput({
 
   if (selectedFile) {
     try {
-      const result = await uploadFile(selectedFile);
-      console.log(result);
+     const result = await uploadFile(selectedFile);
 
-      setSelectedFile(null);
+onSend(`[Uploaded File]: ${result.file}`);
 
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
+setSelectedFile(null);
+
+if (fileInputRef.current) {
+  fileInputRef.current.value = "";
+}
     } catch (err) {
       console.error(err);
       return;
