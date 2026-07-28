@@ -29,7 +29,10 @@ export default function MessageInput({
   try {
     const result = await uploadFile(selectedFile);
 
-    onSend(value, result.text);
+   onSend(
+  value.trim() || "Please analyze this document",
+  result.text
+);
 
     setSelectedFile(null);
 
