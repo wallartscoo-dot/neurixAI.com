@@ -29,8 +29,9 @@ export default function MessageInput({
     try {
      const result = await uploadFile(selectedFile);
 
-onSend(`[Uploaded File]: ${result.file}`);
-
+onSend(
+  `Document:\n${result.text}\n\nUser Question: ${value}`
+);
 setSelectedFile(null);
 
 if (fileInputRef.current) {
