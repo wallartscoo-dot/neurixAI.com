@@ -141,11 +141,58 @@ export async function sendMessage(
         if (payload.done) return;
       } catch {}
     }
-  }
-}
+ export async function sendMessage(
+  conversationId: string,
+  content: string,
+  pdfText: string,
+  onToken: (text: string) => void
+) {
+  const res = await fetch(
+    `${API_URL}/api/conversations/${conversationId}/messages`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...authHeaders(),
+      },
+      body: JSON.stringify({
+        content,
+        pdfText,
+      }),
+    }
+  );
 
-declare global {
-  interface Window {
-    __neurixToken?: string;
+  if (!res.ok) {
+    throw new Error("Failed to get AI response");
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    const events = buffer.split("\n\n");
+    buffer = events.pop() || "";
+
+    for (const event of events) {
+      const line = event.split("\n").find((l) => l.startsWith("data: "));
+      if (!line) continue;
+
+      try {
+        const payload = JSON.parse(line.slice(6));
+
+        if (payload.text) onToken(payload.text);
+
+        if (payload.done) return;
+      } catch {}
+    }
   }
 }
