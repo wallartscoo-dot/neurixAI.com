@@ -14,7 +14,8 @@ router.get("/", (req, res) => {
 router.post("/", async (req, res) => {
   try {
 const message = req.body.message || req.body.content;
-
+const pdfText = req.body.pdfText || "";
+    
 console.log("Request Body:", req.body);
 console.log("Message:", message);
 
@@ -24,13 +25,22 @@ console.log("Message:", message);
       messages: [
         {
           role: "system",
-          content: `
+         content: `
 You are Neurix AI assistant.
+
 Reply in the same language as the user.
 If user writes Roman Urdu, reply in Roman Urdu.
 If user writes English, reply in English.
-`
-        },
+
+If PDF content is provided, answer ONLY using that PDF.
+Do not make up information.
+
+If the answer is not found in the PDF, say:
+"I couldn't find that information in the uploaded PDF."
+
+Uploaded PDF:
+${pdfText}
+`        },
         {
           role: "user",
           content: message
