@@ -18,6 +18,8 @@ const pdfText = req.body.pdfText || "";
     
 console.log("Request Body:", req.body);
 console.log("Message:", message);
+console.log("PDF TEXT LENGTH:", pdfText.length);
+console.log("PDF TEXT:", pdfText.slice(0, 500));
 
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
