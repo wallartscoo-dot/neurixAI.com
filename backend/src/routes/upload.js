@@ -81,6 +81,8 @@ router.post("/", (req, res) => {
       } else if (req.file.mimetype === "text/plain") {
         extractedText = fs.readFileSync(filePath, "utf8");
       }
+      console.log("Extracted Text:");
+      console.log(extractedText);
 
       res.json({
         message: "File uploaded successfully",
