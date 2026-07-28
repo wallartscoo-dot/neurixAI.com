@@ -70,21 +70,12 @@ router.post("/", (req, res) => {
       const pdfParser = new PDFParser();
 
 extractedText = await new Promise((resolve, reject) => {
-  pdfParser.on("pdfParser_dataError", (err) => {
-    reject(err);
+  pdfParser.on("pdfParser_dataError", (errData) => {
+    reject(errData.parserError);
   });
 
-  pdfParser.on("pdfParser_dataReady", (pdfData) => {
-    let text = "";
-
-    for (const page of pdfData.Pages) {
-      for (const item of page.Texts) {
-        text += decodeURIComponent(item.R.map(r => r.T).join("")) + " ";
-      }
-      text += "\n";
-    }
-
-    resolve(text);
+  pdfParser.on("pdfParser_dataReady", () => {
+    resolve(pdfParser.getRawTextContent());
   });
 
   pdfParser.loadPDF(filePath);
