@@ -62,8 +62,9 @@ router.post("/", (req, res) => {
     }
 
     let extractedText = "";
-    
-    try {
+
+        try {
+
       const filePath = req.file.path;
 
       if (req.file.mimetype === "application/pdf") {
@@ -74,17 +75,21 @@ router.post("/", (req, res) => {
             reject(errData.parserError);
           });
 
+
          pdfParser.on("pdfParser_dataReady", () => {
   const text = pdfParser.getRawTextContent();
 
-  console.log("PDF RAW TEXT:");
-  console.log(text);
+        console.log("PDF READY EVENT FIRED");
+        console.log("PDF RAW TEXT LENGTH:", text.length);
+        console.log(text);
 
-  resolve(text);
-});
+        resolve(text);
+      });
+
 
           pdfParser.loadPDF(filePath);
         });
+
       } else if (
         req.file.mimetype ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -94,6 +99,7 @@ router.post("/", (req, res) => {
         });
 
         extractedText = result.value;
+
       } else if (req.file.mimetype === "text/plain") {
         extractedText = fs.readFileSync(filePath, "utf8");
       }
@@ -106,6 +112,7 @@ router.post("/", (req, res) => {
         file: req.file.filename,
         text: extractedText,
       });
+
     } catch (error) {
       console.error(error);
 
