@@ -14,7 +14,7 @@ export default function MessageInput({
   onSend,
   disabled,
 }: {
-  onSend: (text: string) => void;
+  onSend: (text: string, pdfText?: string) => void;
   disabled?: boolean;
 }) {
   const [value, setValue] = useState("");
@@ -31,11 +31,10 @@ export default function MessageInput({
       
       console.log(result);
  console.log(result.text);
-
-onSend(
-  `Document:\n${result.text}\n\nUser Question: ${value}`
-);
-setSelectedFile(null);
+      
+onSend(value, result.text);
+      
+      setSelectedFile(null);
 
 if (fileInputRef.current) {
   fileInputRef.current.value = "";
