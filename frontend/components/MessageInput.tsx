@@ -26,34 +26,39 @@ export default function MessageInput({
   if ((!value.trim() && !selectedFile) || disabled) return;
 
   if (selectedFile) {
-    try {
-     const result = await uploadFile(selectedFile);
-      
-      console.log(result);
- console.log(result.text);
-      
-onSend(value, result.text);
-      
-      setSelectedFile(null);
+  try {
+    const result = await uploadFile(selectedFile);
 
-if (fileInputRef.current) {
-  fileInputRef.current.value = "";
-}
-    } catch (err) {
-      console.error(err);
-      return;
+    onSend(value, result.text);
+
+    setSelectedFile(null);
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
-  }
 
-  if (value.trim()) {
-    onSend(value.trim());
-  }
+    setValue("");
 
-  setValue("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+    }
 
-  if (textareaRef.current) {
-    textareaRef.current.style.height = "auto";
+    return;
+  } catch (err) {
+    console.error(err);
+    return;
   }
+}
+
+if (value.trim()) {
+  onSend(value.trim(), "");
+}
+
+setValue("");
+
+if (textareaRef.current) {
+  textareaRef.current.style.height = "auto";
+}
 }
 
   return (
