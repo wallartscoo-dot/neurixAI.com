@@ -66,31 +66,34 @@ router.post("/", (req, res) => {
     try {
       const filePath = req.file.path;
 
-      if (req.file.mimetype === "application/pdf") {
-      const pdfParser = new PDFParser();
+     if (req.file.mimetype === "application/pdf") {
+  const pdfParser = new PDFParser();
 
-extractedText = await new Promise((resolve, reject) => {
-  pdfParser.on("pdfParser_dataError", (errData) => {
-    reject(errData.parserError);
+  extractedText = await new Promise((resolve, reject) => {
+    pdfParser.on("pdfParser_dataError", (errData) => {
+      reject(errData.parserError);
+    });
+
+    pdfParser.on("pdfParser_dataReady", () => {
+      resolve(pdfParser.getRawTextContent());
+    });
+
+    pdfParser.loadPDF(filePath);
   });
 
-  pdfParser.on("pdfParser_dataReady", () => {
-    resolve(pdfParser.getRawTextContent());
+} else if (
+  req.file.mimetype ===
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+) {
+  const result = await mammoth.extractRawText({
+    path: filePath,
   });
 
-  pdfParser.loadPDF(filePath);
-});
-      } else if (
-        req.file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        const result = await mammoth.extractRawText({
-          path: filePath,
-        });
-        extractedText = result.value;
-      } else if (req.file.mimetype === "text/plain") {
-        extractedText = fs.readFileSync(filePath, "utf8");
-      }
+  extractedText = result.value;
+
+} else if (req.file.mimetype === "text/plain") {
+  extractedText = fs.readFileSync(filePath, "utf8");
+}
       console.log("Extracted Text:");
       console.log(extractedText);
 
