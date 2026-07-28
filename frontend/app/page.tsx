@@ -72,7 +72,7 @@ async function newConversation() {
   }
 }
 
-async function handleSend(text: string) {
+async function handleSend(text: string, pdfText = "") {
   let conversationId = activeId;
 
   if (!conversationId) {
@@ -91,7 +91,11 @@ async function handleSend(text: string) {
 setStreaming(true);
 
 try {
-  await sendMessage(conversationId!, text, (token) => {
+  await sendMessage(
+  conversationId!,
+  text,
+  pdfText,
+  (token) => {
     setMessages((prev) => {
       const next = [...prev];
       next[next.length - 1] = {
