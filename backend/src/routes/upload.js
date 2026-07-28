@@ -2,6 +2,8 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import pdf from "pdf-parse";
+import mammoth from "mammoth";
 
 console.log("Upload route loaded");
 
