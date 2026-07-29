@@ -16,98 +16,83 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const storage = multer.diskStorage({
-  destination: uploadDir,
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
+
   filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+    cb(
+      null,
+      Date.now() + path.extname(file.originalname)
+    );
   },
 });
 
 const upload = multer({
   storage,
   limits: {
-    fileSize: 10 * 1024 * 1024,
-  },
-  fileFilter: (req, file, cb) => {
-    const allowed = [
-      "image/png",
-      "image/jpeg",
-      "image/webp",
-      "application/pdf",
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      "text/plain",
-    ];
-
-    if (allowed.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error("Unsupported file type"));
-    }
+    fileSize: 10 * 1024 * 1024, // 10MB
   },
 });
 
-router.post("/", (req, res) => {
-  upload.single("file")(req, res, async (err) => {
-    if (err) {
-      return res.status(400).json({
-        error: err.message,
-      });
-    }
 
-    console.log("Upload endpoint hit");
-
+router.post("/", upload.single("file"), async (req, res) => {
+  try {
     if (!req.file) {
       return res.status(400).json({
         error: "No file uploaded",
       });
     }
 
-    let extractedText = "";
+    const filePath = req.file.path;
+    const ext = path.extname(req.file.originalname)
+      .toLowerCase();
 
-        try {
+    let text = "";
 
-      const filePath = req.file.path;
-          
-if (req.file.mimetype === "application/pdf") {
-  const buffer = fs.readFileSync(filePath);
+    // PDF
+    if (ext === ".pdf") {
+      const dataBuffer = fs.readFileSync(filePath);
+      const data = await pdf(dataBuffer);
+      text = data.text;
+    }
 
-  const data = await pdf(buffer);
-
-  extractedText = data.text;
-
-  console.log("PDF TEXT LENGTH:", extractedText.length);
-  console.log(extractedText);
-}
-       else if (
-        req.file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-      ) {
-        const result = await mammoth.extractRawText({
-          path: filePath,
-        });
-
-        extractedText = result.value;
-
-      } else if (req.file.mimetype === "text/plain") {
-        extractedText = fs.readFileSync(filePath, "utf8");
-      }
-
-      console.log("Extracted Text:");
-      console.log(extractedText);
-
-      res.json({
-        message: "File uploaded successfully",
-        file: req.file.filename,
-        text: extractedText,
+    // DOCX
+    else if (ext === ".docx") {
+      const result = await mammoth.extractRawText({
+        path: filePath,
       });
 
-    } catch (error) {
-      console.error(error);
+      text = result.value;
+    }
 
-      res.status(500).json({
-        error: "Failed to read document",
+    // TXT
+    else if (ext === ".txt") {
+      text = fs.readFileSync(filePath, "utf8");
+    }
+
+    else {
+      return res.status(400).json({
+        error: "Unsupported file type",
       });
     }
-  });
+
+
+    res.json({
+      success: true,
+      filename: req.file.originalname,
+      text,
+    });
+
+
+  } catch (error) {
+    console.error("Upload error:", error);
+
+    res.status(500).json({
+      error: "File processing failed",
+    });
+  }
 });
+
 
 export default router;
