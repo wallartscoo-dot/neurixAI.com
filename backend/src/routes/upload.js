@@ -2,7 +2,11 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+
 import pdf from "pdf-parse";
+
+import * as pdf from "pdf-parse";
+ f0d7e46 (Fix PDF upload dependencies and update upload route)
 import mammoth from "mammoth";
 
 console.log("Upload route loaded");
@@ -50,6 +54,7 @@ router.post("/", upload.single("file"), async (req, res) => {
 
     let text = "";
 
+
     // PDF
     if (ext === ".pdf") {
       const dataBuffer = fs.readFileSync(filePath);
@@ -74,6 +79,50 @@ router.post("/", upload.single("file"), async (req, res) => {
     else {
       return res.status(400).json({
         error: "Unsupported file type",
+
+      const filePath = req.file.path;
+     if (req.file.mimetype === "application/pdf") {
+  const buffer = fs.readFileSync(filePath);
+
+  console.log("Buffer size:", buffer.length);
+
+  const data = await pdf.default(buffer);
+
+  console.log("PDF INFO:", data.info);
+  console.log("PDF PAGES:", data.numpages);
+  console.log("TEXT LENGTH:", data.text.length);
+
+  extractedText = data.text;
+}
+       else if (
+        req.file.mimetype ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      ) {
+        const result = await mammoth.extractRawText({
+          path: filePath,
+        });
+
+        extractedText = result.value;
+
+      } else if (req.file.mimetype === "text/plain") {
+        extractedText = fs.readFileSync(filePath, "utf8");
+      }
+
+      console.log("Extracted Text:");
+      console.log(extractedText);
+
+      res.json({
+        message: "File uploaded successfully",
+        file: req.file.filename,
+        text: extractedText,
+      });
+
+    } catch (error) {
+      console.error(error);
+
+      res.status(500).json({
+        error: "Failed to read document",
+ f0d7e46 (Fix PDF upload dependencies and update upload route)
       });
     }
 
