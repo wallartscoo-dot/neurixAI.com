@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import PDFParser from "pdf2json";
+import pdf from "pdf-parse";
 import mammoth from "mammoth";
 
 console.log("Upload route loaded");
@@ -66,31 +66,18 @@ router.post("/", (req, res) => {
         try {
 
       const filePath = req.file.path;
+          
+if (req.file.mimetype === "application/pdf") {
+  const buffer = fs.readFileSync(filePath);
 
-      if (req.file.mimetype === "application/pdf") {
-        const pdfParser = new PDFParser();
+  const data = await pdf(buffer);
 
-        extractedText = await new Promise((resolve, reject) => {
-          pdfParser.on("pdfParser_dataError", (errData) => {
-            reject(errData.parserError);
-          });
+  extractedText = data.text;
 
-
-         pdfParser.on("pdfParser_dataReady", () => {
-  const text = pdfParser.getRawTextContent();
-
-        console.log("PDF READY EVENT FIRED");
-        console.log("PDF RAW TEXT LENGTH:", text.length);
-        console.log(text);
-
-        resolve(text);
-      });
-
-
-          pdfParser.loadPDF(filePath);
-        });
-
-      } else if (
+  console.log("PDF TEXT LENGTH:", extractedText.length);
+  console.log(extractedText);
+}
+       else if (
         req.file.mimetype ===
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
       ) {
