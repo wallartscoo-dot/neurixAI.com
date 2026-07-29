@@ -63,9 +63,15 @@ ${pdfText}
 `
 },
         {
-          role: "user",
-          content: message
-        }
+  role: "user",
+  content: `
+User Request:
+
+${message}
+
+If a document has been uploaded, use it to answer.
+`
+}
       ],
 
       temperature: 0.7
