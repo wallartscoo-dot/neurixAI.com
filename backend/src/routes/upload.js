@@ -5,7 +5,6 @@ import fs from "fs";
 
 import pdf from "pdf-parse";
 
-import * as pdf from "pdf-parse";
  f0d7e46 (Fix PDF upload dependencies and update upload route)
 import mammoth from "mammoth";
 
@@ -58,8 +57,8 @@ router.post("/", upload.single("file"), async (req, res) => {
     // PDF
     if (ext === ".pdf") {
       const dataBuffer = fs.readFileSync(filePath);
-      const data = await pdf(dataBuffer);
-      text = data.text;
+     const data = await pdf.PDFParse(dataBuffer);
+text = data.text;
     }
 
     // DOCX
