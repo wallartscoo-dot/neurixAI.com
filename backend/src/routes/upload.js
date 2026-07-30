@@ -2,7 +2,7 @@ import express from "express";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
-import pdf from "pdf-parse";
+import PDFParser from "pdf2json";
 import mammoth from "mammoth";
 
 console.log("Upload route loaded");
@@ -16,10 +16,7 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-
+  destination: (req, file, cb) => cb(null, uploadDir),
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
@@ -46,48 +43,54 @@ router.post("/", upload.single("file"), async (req, res) => {
     let text = "";
 
     if (ext === ".pdf") {
-      const buffer = fs.readFileSync(filePath);
+      text = await new Promise((resolve, reject) => {
+        const pdfParser = new PDFParser();
 
-      console.log("PDF Size:", buffer.length);
+        pdfParser.on("pdfParser_dataError", (err) => {
+          reject(err.parserError);
+        });
 
-      const data = await pdf(buffer);
+        pdfParser.on("pdfParser_dataReady", (pdfData) => {
+          let extracted = "";
 
-      console.log("Pages:", data.numpages);
-      console.log("First 300 chars:", data.text.substring(0, 300));
+          pdfData.Pages.forEach((page) => {
+            page.Texts.forEach((item) => {
+              item.R.forEach((r) => {
+                extracted += decodeURIComponent(r.T) + " ";
+              });
+            });
+            extracted += "\n";
+          });
 
-      text = data.text ? data.text.trim() : "";
+          resolve(extracted.trim());
+        });
 
-      console.log("Extracted Text Length:", text.length);
-    }
-
-    else if (ext === ".docx") {
+        pdfParser.loadPDF(filePath);
+      });
+    } else if (ext === ".docx") {
       const result = await mammoth.extractRawText({
         path: filePath,
       });
 
       text = result.value;
-    }
-
-    else if (ext === ".txt") {
+    } else if (ext === ".txt") {
       text = fs.readFileSync(filePath, "utf8");
-    }
-
-    else {
+    } else {
       return res.status(400).json({
         error: "Unsupported file type",
       });
     }
 
-    console.log("Final Text Length:", text.length);
+    console.log("Extracted Text Length:", text.length);
 
     res.json({
-      success: true,
-      filename: req.file.originalname,
+      message: "File uploaded successfully",
+      file: req.file.filename,
       text,
     });
 
   } catch (error) {
-    console.error("Upload error:", error);
+    console.error(error);
 
     res.status(500).json({
       error: "File processing failed",
