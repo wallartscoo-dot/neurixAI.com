@@ -16,7 +16,9 @@ if (!fs.existsSync(uploadDir)) {
 }
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadDir),
+  destination: (req, file, cb) => {
+    cb(null, uploadDir);
+  },
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   },
@@ -90,7 +92,7 @@ router.post("/", upload.single("file"), async (req, res) => {
     });
 
   } catch (error) {
-    console.error(error);
+    console.error("Upload error:", error);
 
     res.status(500).json({
       error: "File processing failed",
