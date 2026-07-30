@@ -32,7 +32,6 @@ const upload = multer({
   },
 });
 
-
 router.post("/", upload.single("file"), async (req, res) => {
   try {
     if (!req.file) {
@@ -46,15 +45,20 @@ router.post("/", upload.single("file"), async (req, res) => {
 
     let text = "";
 
-
     if (ext === ".pdf") {
       const buffer = fs.readFileSync(filePath);
 
+      console.log("PDF Size:", buffer.length);
+
       const data = await pdf(buffer);
 
-      text = data.text;
-    }
+      console.log("Pages:", data.numpages);
+      console.log("First 300 chars:", data.text.substring(0, 300));
 
+      text = data.text ? data.text.trim() : "";
+
+      console.log("Extracted Text Length:", text.length);
+    }
 
     else if (ext === ".docx") {
       const result = await mammoth.extractRawText({
@@ -64,11 +68,9 @@ router.post("/", upload.single("file"), async (req, res) => {
       text = result.value;
     }
 
-
     else if (ext === ".txt") {
       text = fs.readFileSync(filePath, "utf8");
     }
-
 
     else {
       return res.status(400).json({
@@ -76,9 +78,7 @@ router.post("/", upload.single("file"), async (req, res) => {
       });
     }
 
-
-    console.log("Extracted Text Length:", text.length);
-
+    console.log("Final Text Length:", text.length);
 
     res.json({
       success: true,
@@ -86,15 +86,14 @@ router.post("/", upload.single("file"), async (req, res) => {
       text,
     });
 
-
   } catch (error) {
     console.error("Upload error:", error);
 
     res.status(500).json({
       error: "File processing failed",
+      details: error.message,
     });
   }
 });
-
 
 export default router;
