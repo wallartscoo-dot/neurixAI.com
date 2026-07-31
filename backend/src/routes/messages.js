@@ -12,6 +12,7 @@ router.get("/", (req, res) => {
 });
 
 router.post("/", async (req, res) => {
+  console.log("🔥 MESSAGE ROUTE HIT");
   try {
     const message = req.body.message || req.body.content || "";
     const pdfText = req.body.pdfText || "";
