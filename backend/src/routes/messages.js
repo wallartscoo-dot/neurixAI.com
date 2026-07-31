@@ -13,99 +13,115 @@ router.get("/", (req, res) => {
 
 router.post("/", async (req, res) => {
   try {
-const message = req.body.message || req.body.content;
-const pdfText = req.body.pdfText || "";
-    
-console.log("Request Body:", req.body);
-console.log("Message:", message);
-console.log("PDF TEXT LENGTH:", pdfText.length);
-console.log("PDF TEXT:", pdfText.slice(0, 500));
+    const message = req.body.message || req.body.content || "";
+    const pdfText = req.body.pdfText || "";
+
+    console.log("Request Body:", req.body);
+    console.log("Message:", message);
+    console.log("PDF TEXT LENGTH:", pdfText.length);
+    console.log("PDF TEXT:", pdfText.slice(0, 500));
+
+    const hasDocument = pdfText.trim().length > 0;
+
+    const systemPrompt = `
+You are Neurix AI.
+
+LANGUAGE RULES:
+- Reply in the same language as the user.
+- If the user uses Roman Urdu, reply in Roman Urdu.
+- If the user uses Urdu, reply in Urdu.
+- If the user uses English, reply in English.
+
+DOCUMENT MODE:
+${
+  hasDocument
+    ? `
+A document has been uploaded.
+
+IMPORTANT:
+- The uploaded document is your PRIMARY and AUTHORITATIVE source.
+- Answer the user's question using ONLY the uploaded document.
+- Do NOT ignore the document.
+- Do NOT say that the document was not provided.
+- Do NOT invent information that is not in the document.
+- You may calculate or explain information that is directly present in the document.
+- If the requested information cannot be found in the document, say exactly:
+
+"I couldn't find that information in the uploaded document."
+
+UPLOADED DOCUMENT:
+-------------------
+${pdfText}
+-------------------
+`
+    : `
+No document has been uploaded.
+Answer the user normally.
+`
+}
+`;
+
+    console.log("DOCUMENT MODE:", hasDocument ? "ON" : "OFF");
 
     const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
 
       messages: [
-       {
-  role: "system",
-  content: `
-You are Neurix AI, an intelligent AI assistant.
-
-GENERAL RULES:
-- Reply in the same language as the user.
-- If the user writes in Roman Urdu, reply in Roman Urdu.
-- If the user writes in Urdu, reply in Urdu.
-- If the user writes in English, reply in English.
-- Format answers using Markdown with headings, bullet points and tables where useful.
-
-DOCUMENT MODE:
-
-If an uploaded document is available below, treat it as the primary source of truth.
-
-Your abilities include:
-- Summarize the document.
-- Explain any topic from the document.
-- Answer questions using the document.
-- Extract important points.
-- Create notes.
-- Create MCQs.
-- Translate the document.
-- Explain difficult concepts in simple language.
-
-Rules:
-- Never invent facts.
-- Answer from the uploaded document whenever possible.
-- If the answer is not present in the document, clearly say:
-  "I couldn't find that information in the uploaded document."
-
-Uploaded Document:
-
-${pdfText}
-`
-},
         {
-  role: "user",
-  content: `
-User Request:
-
-${message}
-
-If a document has been uploaded, use it to answer.
-`
-}
+          role: "system",
+          content: systemPrompt,
+        },
+        {
+          role: "user",
+          content: message,
+        },
       ],
 
-      temperature: 0.7
+      temperature: 0.2,
     });
 
     console.log("Groq response received");
-console.log(completion);
 
-    const reply = completion.choices[0].message.content;
+    const reply =
+      completion.choices?.[0]?.message?.content ||
+      "I couldn't generate a response.";
 
-res.setHeader("Content-Type", "text/event-stream");
-res.setHeader("Cache-Control", "no-cache");
-res.setHeader("Connection", "keep-alive");
+    console.log("AI REPLY:", reply);
 
-const words = reply.split(" ");
+    res.setHeader("Content-Type", "text/event-stream");
+    res.setHeader("Cache-Control", "no-cache");
+    res.setHeader("Connection", "keep-alive");
 
-for (const word of words) {
-  res.write(`data: ${JSON.stringify({ text: word + " " })}\n\n`);
+    const words = reply.split(" ");
 
-  await new Promise((resolve) => setTimeout(resolve, 30));
-}
+    for (const word of words) {
+      res.write(
+        `data: ${JSON.stringify({
+          text: word + " ",
+        })}\n\n`
+      );
 
-res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
-res.end();
+      await new Promise((resolve) => setTimeout(resolve, 30));
+    }
 
+    res.write(
+      `data: ${JSON.stringify({
+        done: true,
+      })}\n\n`
+    );
 
- } catch (error) {
-  console.error("FULL ERROR:", error);
+    res.end();
+  } catch (error) {
+    console.error("FULL ERROR:", error);
 
-  res.status(500).json({
-    error: error.message || "AI response failed",
-  });
-}
+    if (!res.headersSent) {
+      return res.status(500).json({
+        error: error.message || "AI response failed",
+      });
+    }
 
+    res.end();
+  }
 });
 
 export default router;
