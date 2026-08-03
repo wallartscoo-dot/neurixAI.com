@@ -135,13 +135,6 @@ export async function sendMessage(
   const reader = res.body?.getReader();
   if (!reader) return;
 
-  if (!res.ok) {
-    throw new Error("Failed to get AI response");
-  }
-
-  const reader = res.body?.getReader();
-  if (!reader) return;
-
   const decoder = new TextDecoder();
   let buffer = "";
 
