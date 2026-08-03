@@ -103,6 +103,12 @@ export async function sendMessage(
   pdfText: string,
   onToken: (text: string) => void
 ) {
+
+  console.log("=== SEND MESSAGE ===");
+  console.log("URL:", `${API_URL}/api/conversations/${conversationId}/messages`);
+  console.log("CONTENT:", content);
+  console.log("PDF LENGTH:", pdfText.length);
+
   const res = await fetch(
     `${API_URL}/api/conversations/${conversationId}/messages`,
     {
@@ -117,6 +123,17 @@ export async function sendMessage(
       }),
     }
   );
+
+  console.log("STATUS:", res.status);
+
+  if (!res.ok) {
+    const error = await res.text();
+    console.log("ERROR RESPONSE:", error);
+    throw new Error("Failed to get AI response");
+  }
+
+  const reader = res.body?.getReader();
+  if (!reader) return;
 
   if (!res.ok) {
     throw new Error("Failed to get AI response");
