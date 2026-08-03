@@ -75,9 +75,8 @@ async function handleSend(text: string, pdfText = "") {
   console.log("PDF LENGTH:", pdfText.length);
   console.log("PDF START:", pdfText.slice(0, 200));
 
-  let conversationId = activeId;
-}
-
+  let conversationId = activeId
+  
   if (!conversationId) {
     const conv = await createConversation();
     setConversations((prev) => [conv, ...prev]);
