@@ -28,6 +28,10 @@ export default function MessageInput({
   if (selectedFile) {
   try {
     const result = await uploadFile(selectedFile);
+    console.log("UPLOAD RESULT:", result);
+console.log("PDF TEXT LENGTH:", result.text?.length);
+console.log("PDF TEXT:", result.text?.slice(0, 200));
+
 
    onSend(
   value.trim() || "Please analyze this document",
