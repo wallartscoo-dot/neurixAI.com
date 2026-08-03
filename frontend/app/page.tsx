@@ -71,7 +71,12 @@ async function newConversation() {
 }
 
 async function handleSend(text: string, pdfText = "") {
+  console.log("TEXT:", text);
+  console.log("PDF LENGTH:", pdfText.length);
+  console.log("PDF START:", pdfText.slice(0, 200));
+
   let conversationId = activeId;
+}
 
   if (!conversationId) {
     const conv = await createConversation();
